@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Plate | Ghana's Choice</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <div id="auth-screen">
+        <div class="auth-box">
+            <h1>BIG PLATE</h1>
+            <p>Enterprise Food Delivery</p>
+            <div id="auth-inputs">
+                <input type="email" id="email" placeholder="Email Address">
+                <input type="password" id="password" placeholder="Password">
+                <select id="user-role">
+                    <option value="customer">I am a Customer</option>
+                    <option value="vendor">I am a Vendor</option>
+                </select>
+                <button class="btn" onclick="handleAuth()">Login / Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-app" style="display: none;">
+        <div class="header">
+            <h2 style="color:var(--primary); margin:0;">BIG PLATE</h2>
+            <input type="text" id="searchInput" class="search-bar" placeholder="Search menu..." onkeyup="filterMenu()">
+            <button onclick="location.reload()" class="logout-btn">Logout</button>
+        </div>
+
+        <div id="vendor-section" class="vendor-panel">
+            <h3>Vendor: Upload New Item</h3>
+            <input type="text" id="newItemName" placeholder="Food Name">
+            <input type="number" id="newItemPrice" placeholder="Price (GHS)">
+            <button class="btn" onclick="uploadItem()">Add to Menu</button>
+        </div>
+
+        <div class="app-layout">
+            <div class="menu-side">
+                <div class="menu-grid" id="menu-container">
+                    </div>
+            </div>
+
+            <div class="cart-side">
+                <div class="cart-section">
+                    <h3>Your Cart</h3>
+                    <div id="cart-items"></div>
+                    <hr>
+                    <p>Total: <b>GHS <span id="cart-total">0</span></b></p>
+                    <button class="btn" onclick="checkoutWhatsApp()">Checkout via WhatsApp</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>
