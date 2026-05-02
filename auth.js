@@ -1,6 +1,6 @@
 // 1. SUPABASE CONNECTION
 const supabaseUrl = 'https://udsp-saykab-rptwkyaxnp.supabase.co'; 
-const supabaseKey = 'YOUR_NEW_KEY_HERE'; // Replace with your active Anon Key
+const supabaseKey = 'YOUR_NEW_KEY_HERE'; // Replace this with your actual Anon Key
 const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentCart = [];
@@ -23,8 +23,7 @@ async function handleAuth() {
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
         
-        // If they are a vendor, show the upload panel
-        if (role === 'vendor') {
+        if (role === 'Vendor') { // Capital 'V' to match your dropdown
             document.getElementById('vendor-section').style.display = 'block';
         }
         loadMenu();
@@ -33,11 +32,9 @@ async function handleAuth() {
 
 // 3. MENU LOGIC
 async function loadMenu() {
-    // Attempt to pull from your Supabase 'menu' table
     const { data, error } = await _supabase.from('menu').select('*');
 
-    if (error || !data) {
-        // Fallback demo data if table is empty
+    if (error  !data  data.length === 0) { // Fixed the "||" symbol
         menuData = [
             {id: 1, name: 'Assorted Jollof', price: 50, img: 'https://images.unsplash.com/photo-1567620905732-2d1ec7bb7445?auto=format&fit=crop&w=400&q=80'},
             {id: 2, name: 'Banku & Tilapia', price: 70, img: 'https://images.unsplash.com/photo-1599487488170-d11ec9c175f0?auto=format&fit=crop&w=400&q=80'}
@@ -50,6 +47,7 @@ async function loadMenu() {
 
 function renderMenu(items) {
     const container = document.getElementById('menu-container');
+    // Using backticks () for the HTML template below
     container.innerHTML = items.map(item => 
         <div class="food-card">
             <img src="${item.img || 'https://via.placeholder.com/150'}" alt="${item.name}">
@@ -69,7 +67,7 @@ function addToCart(name, price) {
 function updateCartUI() {
     const cartDiv = document.getElementById('cart-items');
     let total = 0;
-    cartDiv.innerHTML = currentCart.map((item, index) => {
+    cartDiv.innerHTML = currentCart.map((item) => {
         total += item.price;
         return <p>${item.name} - GHS ${item.price}</p>;
     }).join('');
@@ -81,7 +79,7 @@ function checkoutWhatsApp() {
     let message = "Hello Big Plate, I would like to order:%0A";
     currentCart.forEach(item => message += - ${item.name} (GHS ${item.price})%0A);
     message += %0ATotal: GHS ${document.getElementById('cart-total').innerText};
-    window.open(https://wa.me/233500000000?text=${message});
+    window.open(https://wa.me/233500000000?text=${message}`); // Replace with your number
 }
 
 function filterMenu() {
