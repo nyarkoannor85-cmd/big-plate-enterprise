@@ -58,5 +58,34 @@
     </div>
 
     <script src="auth.js"></script>
-</body>
+
+ <script type="module">
+      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+      // Use your actual Project URL and Anon Key here
+      const supabaseUrl = 'https://iaqkorbstonyqhowhksr.supabase.co'
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' // Use the full key from your screenshot
+      
+      const supabase = createClient(supabaseUrl, supabaseKey)
+
+      // Make sure your button in the HTML has id="login-btn"
+      const loginBtn = document.getElementById('login-btn')
+
+      loginBtn.addEventListener('click', async () => {
+          const email = document.getElementById('email').value
+          const password = document.getElementById('password').value
+
+          const { data, error } = await supabase.auth.signUp({
+              email: email,
+              password: password,
+          })
+
+          if (error) {
+              alert("Error: " + error.message)
+          } else {
+              alert("Success! Check your email to confirm.")
+          }
+      })
+    </script>
+  </body>
 </html>
