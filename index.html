@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Plate</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .auth-container {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+    }
+    .auth-box {
+      text-align: center;
+    }
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    .input-group input, 
+    .input-group select {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    .btn {
+      width: 100%;
+      padding: 10px;
+    }
+    .footer-credit {
+      position: absolute;
+      bottom: 20px;
+      text-align: center;
+      width: 100%;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Auth Section -->
+  <div id="auth-section" class="auth-container">
+    <div class="auth-box">
+      <h1>Big Plate</h1>
+      <p>Welcome. Please sign in to access your dashboard.</p>
+      
+      <form onsubmit="handleLogin(event)">
+        <div class="input-group">
+          <input type="email" id="email" placeholder="Email Address" required>
+        </div>
+        <div class="input-group">
+          <input type="password" id="password" placeholder="Password" required>
+        </div>
+        <div class="input-group">
+          <input type="tel" id="phone" placeholder="Telephone Number" required>
+        </div>
+        <div class="input-group">
+          <input type="text" id="display-name" placeholder="Username / Display Name" required>
+        </div>
+        <div class="input-group">
+          <input type="text" id="ghana-card" placeholder="Ghana Card (GHA-123456789-1)" required>
+        </div>
+        <div class="input-group">
+          <label for="user-role">I am a:</label>
+          <select id="user-role" required>
+            <option value="customer">Customer / Buyer</option>
+            <option value="vendor">Vendor / Seller</option>
+          </select>
+        </div>
+        <button type="submit" class="btn" id="login-btn">Log In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Menu Section -->
+  <div id="menu-section" style="display: none;">
+    <div class="menu-container">
+      <h1>Big Plate Dashboard</h1>
+      <p>Access Granted! Your dashboard tools will load here.</p>
+    </div>
+  </div>
+
+  <!-- Designer Credit -->
+  <div class="footer-credit">
+    <p>Designed & Developed by Titan</p>
+  </div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Supabase Initialization -->
+  <script>
+    const SUPABASE_URL = 'https://iaqkorbstonyqhowhksr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // full anon key here
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  </script>
+
+  <!-- Core Auth Logic -->
+  <script src="auth.js"></script>
+</body>
+</html>
