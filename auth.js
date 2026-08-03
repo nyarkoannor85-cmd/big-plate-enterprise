@@ -111,3 +111,120 @@ async function handleForgotPassword() {
     alert("Unexpected error occurred. Check console for details.");
   }
 }
+
+// Function to handle logging in
+async function handleLogin(event) {
+  event.preventDefault();
+  
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+
+  const { data, error } = await _supabase.auth.signInWithPassword({
+    email: email,
+    password: password,
+  });
+
+  if (error) {
+    alert("Error logging in: " + error.message);
+  } else {
+    // Call the function to transition to the dashboard view
+    showDashboard();
+  }
+}
+
+// Function to handle signing up
+async function handleSignup(event) {
+  event.preventDefault();
+  
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  const username = document.getElementById('signup-username').value;
+  const phone = document.getElementById('signup-phone').value;
+  const ghanaCard = document.getElementById('signup-ghana-card').value;
+  const role = document.getElementById('signup-role').value;
+
+  // Sign up with Supabase Auth and pass extra metadata if needed
+  const { data, error } = await _supabase.auth.signUp({
+    email: email,
+    password: password,
+    options: {
+      data: {
+        username: username,
+        phone: phone,
+        ghana_card: ghanaCard,
+        role: role
+      }
+    }
+  });
+
+  if (error) {
+    alert("Error signing up: " + error.message);
+  } else {
+    alert("Signup successful! Please check your email or log in.");
+    showLogin(); // Switch back to login or straight to dashboard depending on your flow
+  }
+}
+
+
+// Function that hides the login/signup box and displays your dashboard
+function showDashboard() {
+  document.getElementById('auth-section').style.display = 'none';
+  document.getElementById('menu-section').style.display = 'block';
+}// Function to handle logging in
+async function handleLogin(event) {
+  event.preventDefault();
+  
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+
+  const { data, error } = await _supabase.auth.signInWithPassword({
+    email: email,
+    password: password,
+  });
+
+  if (error) {
+    alert("Error logging in: " + error.message);
+  } else {
+    // Call the function to transition to the dashboard view
+    showDashboard();
+  }
+}
+
+// Function to handle signing up
+async function handleSignup(event) {
+  event.preventDefault();
+  
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  const username = document.getElementById('signup-username').value;
+  const phone = document.getElementById('signup-phone').value;
+  const ghanaCard = document.getElementById('signup-ghana-card').value;
+  const role = document.getElementById('signup-role').value;
+
+  // Sign up with Supabase Auth and pass extra metadata if needed
+  const { data, error } = await _supabase.auth.signUp({
+    email: email,
+    password: password,
+    options: {
+      data: {
+        username: username,
+        phone: phone,
+        ghana_card: ghanaCard,
+        role: role
+      }
+    }
+  });
+
+  if (error) {
+    alert("Error signing up: " + error.message);
+  } else {
+    alert("Signup successful! Please check your email or log in.");
+    showLogin(); // Switch back to login or straight to dashboard depending on your flow
+  }
+}
+
+// Function that hides the login/signup box and displays your dashboard
+function showDashboard() {
+  document.getElementById('auth-section').style.display = 'none';
+  document.getElementById('menu-section').style.display = 'block';
+}

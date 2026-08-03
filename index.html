@@ -13,11 +13,15 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      font-family: Arial, sans-serif;
     }
     .auth-container {
       width: 100%;
       max-width: 400px;
       padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+      border-radius: 8px;
+      background: #fff !important;
     }
     .auth-box {
       text-align: center;
@@ -40,6 +44,18 @@
     .btn {
       width: 100%;
       padding: 10px;
+      margin-top: 10px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+    .toggle-links {
+      margin-top: 15px;
+      font-size: 14px;
     }
     .footer-credit {
       position: absolute;
@@ -57,38 +73,56 @@
   <div id="auth-section" class="auth-container">
     <div class="auth-box">
       <h1>Big Plate</h1>
-      <p>Welcome. Please sign in to access your dashboard.</p>
+      <p>Welcome. Please log in or sign up to access your dashboard.</p>
       
-      <form onsubmit="handleLogin(event)">
+      <!-- Login Form -->
+      <form id="login-form" onsubmit="handleLogin(event)">
         <div class="input-group">
-          <input type="email" id="email" placeholder="Email Address" required>
+          <input type="email" id="login-email" placeholder="Email Address" required>
         </div>
         <div class="input-group">
-          <input type="password" id="password" placeholder="Password" required>
+          <input type="password" id="login-password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn">Log In</button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signup-form" onsubmit="handleSignup(event)" style="display:none;">
+        <div class="input-group">
+          <input type="email" id="signup-email" placeholder="Email Address" required>
         </div>
         <div class="input-group">
-          <input type="tel" id="phone" placeholder="Telephone Number" required>
+          <input type="password" id="signup-password" placeholder="Password" required>
         </div>
         <div class="input-group">
-          <input type="text" id="display-name" placeholder="Username / Display Name" required>
+          <input type="text" id="signup-username" placeholder="Username / Display Name" required>
         </div>
         <div class="input-group">
-          <input type="text" id="ghana-card" placeholder="Ghana Card (GHA-123456789-1)" required>
+          <input type="tel" id="signup-phone" placeholder="Telephone Number" required>
         </div>
         <div class="input-group">
-          <label for="user-role">I am a:</label>
-          <select id="user-role" required>
+          <input type="text" id="signup-ghana-card" placeholder="Ghana Card (GHA-123456789-1)" required>
+        </div>
+        <div class="input-group">
+          <label for="signup-role">I am a:</label>
+          <select id="signup-role" required>
             <option value="customer">Customer / Buyer</option>
             <option value="vendor">Vendor / Seller</option>
           </select>
         </div>
-        <button type="submit" class="btn" id="login-btn">Log In</button>
+        <button type="submit" class="btn">Sign Up</button>
       </form>
+
+      <!-- Toggle Links -->
+      <div class="toggle-links">
+        <span id="to-signup-wrap"><a href="#" onclick="showSignup(); return false;">Create an account</a></span> | 
+        <span id="to-login-wrap" style="display:none;"><a href="#" onclick="showLogin(); return false;">Already have an account?</a></span>
+      </div>
     </div>
   </div>
 
   <!-- Menu Section -->
-  <div id="menu-section" style="display: none;">
+  <div id="menu-section" style="display:none;">
     <div class="menu-container">
       <h1>Big Plate Dashboard</h1>
       <p>Access Granted! Your dashboard tools will load here.</p>
@@ -99,15 +133,29 @@
   <div class="footer-credit">
     <p>Designed & Developed by Titan</p>
   </div>
-
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <!-- Supabase Initialization -->
+  <!-- Supabase Initialization & Toggle Functions -->
   <script>
     const SUPABASE_URL = 'https://iaqkorbstonyqhowhksr.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhcWtvcmJzdG9ueXFob3doa3NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2ODI3OTIsImV4cCI6MjA5MzI1ODc5Mn0.c9zj6qb11DHfj2HotbIcCfw4z5yfIdPw0UnHdWv5cyI'; // full anon key here
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhcWtvcmJzdG9ueXFob3doa3NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2ODI3OTIsImV4cCI6MjA5MzI1ODc5Mn0.c9zj6qb11DHfj2HotbIcCfw4z5yfIdPw0UnHdWv5cyI';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Toggle logic functions
+    function showSignup() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('signup-form').style.display = 'block';
+      document.getElementById('to-signup-wrap').style.display = 'none';
+      document.getElementById('to-login-wrap').style.display = 'inline';
+    }
+
+    function showLogin() {
+      document.getElementById('signup-form').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+      document.getElementById('to-login-wrap').style.display = 'none';
+      document.getElementById('to-signup-wrap').style.display = 'inline';
+    }
   </script>
 
   <!-- Core Auth Logic -->
