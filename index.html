@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +12,7 @@
             margin: 0; font-family: 'Segoe UI', sans-serif;
             background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed;
             background-size: cover;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -84,10 +83,10 @@
         }
 
         /* MAIN APP SCREEN */
-        #main-app { display: none; padding: 20px; width: 100%; max-width: 1200px; height: 100vh; box-sizing: border-box; overflow-y: auto; }
-        .header { background: var(--glass); padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        #main-app { display: none; padding: 20px; width: 100%; max-width: 1200px; min-height: 100vh; box-sizing: border-box; }
+        .header { background: var(--glass); padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
         
-        .search-bar { width: 100%; max-width: 400px; padding: 10px; border-radius: 25px; border: 1px solid #ddd; outline: none; margin: 0 10px; }
+        .search-bar { width: 100%; max-width: 400px; padding: 10px; border-radius: 25px; border: 1px solid #ddd; outline: none; }
 
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         .food-card { background: var(--glass); border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); padding: 15px; text-align: center; }
@@ -96,17 +95,19 @@
         .food-price { color: var(--primary); font-weight: bold; font-size: 18px; margin-bottom: 5px; }
         .food-stock { color: #555; font-size: 13px; margin-bottom: 10px; }
 
-        .vendor-panel { background: #2d3436; color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; display: none; }
+        .vendor-panel { background: var(--glass); color: var(--dark); padding: 25px; border-radius: 15px; margin-bottom: 20px; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 500px; margin-left: auto; margin-right: auto; text-align: center; }
+        .vendor-panel h3 { color: var(--primary); margin-top: 0; }
+        
         .cart-section { background: var(--glass); padding: 20px; border-radius: 15px; position: sticky; top: 20px; height: fit-content; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         
         .footer-credit {
-            position: fixed;
-            bottom: 10px;
+            margin-top: 30px;
             text-align: center;
             width: 100%;
             font-size: 13px;
             color: #fff;
             text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            padding-bottom: 20px;
         }
     </style>
 </head>
@@ -119,7 +120,6 @@
         <p id="form-subtitle">Welcome. Please sign in to access your dashboard.</p>
         
         <form id="auth-form" onsubmit="handleAuthSubmit(event)">
-            <!-- Always visible credentials -->
             <div class="input-group">
                 <input type="email" id="email" placeholder="Email Address" required>
             </div>
@@ -148,7 +148,6 @@
             <button type="submit" class="btn" id="login-btn">Log In</button>
         </form>
 
-        <!-- Toggle Links -->
         <div class="toggle-links">
             <a href="#" id="toggle-to-signup" onclick="switchToSignup(event)">Create a new account</a>
             <a href="#" id="toggle-to-login" style="display: none;" onclick="switchToLogin(event)">Already a user? Sign in</a>
@@ -164,13 +163,26 @@
         <button onclick="signOut()" class="btn" style="width: auto; padding: 8px 15px; margin: 0;">Logout</button>
     </div>
 
-    <!-- Vendor Upload Panel (Shows only if user role is vendor) -->
+    <!-- Vendor Dashboard Panel (Matches your Backend Layout) -->
     <div id="vendor-section" class="vendor-panel">
-        <h3>Vendor: Upload New Item</h3>
-        <input type="text" id="newItemName" placeholder="Food Name">
-        <input type="number" id="newItemPrice" placeholder="Price (GHS)">
-        <input type="number" id="newItemStock" placeholder="Stock Quantity">
-        <button class="btn" style="background:#28a745; margin-top:10px;" onclick="uploadItem()">Add to Menu</button>
+        <h3>Big Plate Dashboard</h3>
+        <div class="input-group">
+            <label>Food Title</label>
+            <input type="text" id="newItemName" placeholder="e.g. Jollof Rice & Chicken">
+        </div>
+        <div class="input-group">
+            <label>Price (GHS)</label>
+            <input type="number" id="newItemPrice" step="0.01" placeholder="0.00">
+        </div>
+        <div class="input-group">
+            <label>Stock Quantity</label>
+            <input type="number" id="newItemStock" placeholder="0">
+        </div>
+        <div class="input-group">
+            <label>Food Image</label>
+            <input type="file" id="newItemImage" accept="image/*" style="padding: 8px; background: #fff;">
+        </div>
+        <button class="btn" onclick="uploadItem()">Post Meal</button>
     </div>
 
     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
@@ -188,16 +200,14 @@
             </div>
         </div>
     </div>
-</div>
 
-<!-- Designer Credit -->
-<div class="footer-credit">
-    <p>Designed & Developed by Titan</p>
+    <div class="footer-credit">
+        <p>Designed & Developed by Titan</p>
+    </div>
 </div>
 
 <!-- Supabase Initialization & Logic -->
 <script>
-    // Connection Keys
     const supabaseUrl = 'https://iaqkorbstonyqhowhksr.supabase.co'; 
     const supabaseKey = 'sb_publishable_EQolnAMn2FBFEkLtA0DhPQ_dvjPGMQw';
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
@@ -206,7 +216,6 @@
     let currentCart = [];
     let menuData = [];
 
-    // Toggle Form Views
     function switchToSignup(e) {
         e.preventDefault();
         authMode = "signup";
@@ -243,7 +252,6 @@
         document.getElementById("toggle-to-login").style.display = "none";
     }
 
-    // Auth Submission Handler (Login or Sign Up)
     async function handleAuthSubmit(event) {
         event.preventDefault();
 
@@ -288,12 +296,10 @@
         }
     }
 
-    // Switch View to Main App Dashboard
     function transitionToDashboard(user) {
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
         
-        // Check user role if available from metadata to show vendor panel
         const meta = user.user_metadata;
         if (meta && meta.role === 'vendor') {
             document.getElementById('vendor-section').style.display = 'block';
@@ -305,14 +311,13 @@
     async function loadMenu() {
         const { data, error } = await _supabase.from('menu').select('*');
 
-        if (error) {
-            // Fallback sample data if table isn't created yet
+        if (error || !data) {
             menuData = [
                 {id: 1, name: 'Assorted Jollof', price: 50, stock: 15, img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=300&q=80'},
                 {id: 2, name: 'Banku & Tilapia', price: 70, stock: 8, img: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=300&q=80'}
             ];
         } else {
-            menuData = data || [];
+            menuData = data;
         }
         renderMenu(menuData);
     }
@@ -377,21 +382,54 @@
         window.open(`https://wa.me/233500000000?text=${message}`);
     }
 
+    // Backend Upload function handling both Image Storage & Database Insertion
     async function uploadItem() {
         const name = document.getElementById('newItemName').value;
         const price = parseFloat(document.getElementById('newItemPrice').value);
         const stock = parseInt(document.getElementById('newItemStock').value);
-        
-        if(!name || isNaN(price) || isNaN(stock)) return alert("Please fill in all item details correctly!");
+        const imageFile = document.getElementById('newItemImage').files[0];
 
-        const { error } = await _supabase.from('menu').insert([{ name, price, stock }]);
+        if(!name || isNaN(price) || isNaN(stock)) {
+            return alert("Please fill in the food title, price, and stock quantity!");
+        }
+
+        let imageUrl = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80';
+
+        // If an image file is selected, upload it to Supabase Storage bucket named 'food-images'
+        if (imageFile) {
+            const fileName = `${Date.now()}-${imageFile.name}`;
+            const { data: uploadData, error: uploadError } = await _supabase.storage
+                .from('food-images')
+                .upload(fileName, imageFile);
+
+            if (uploadError) {
+                alert("Image storage upload failed: " + uploadError.message + "\n(Make sure you created a public bucket named 'food-images' in Supabase!)");
+                return;
+            }
+
+            const { data: publicURLData } = _supabase.storage
+                .from('food-images')
+                .getPublicUrl(fileName);
+
+            imageUrl = publicURLData.publicUrl;
+        }
+
+        // Insert meal details into the Supabase database 'menu' table
+        const { error } = await _supabase.from('menu').insert([{ 
+            name: name, 
+            price: price, 
+            stock: stock, 
+            img: imageUrl 
+        }]);
+
         if(error) {
-            alert("Error adding item: " + error.message);
+            alert("Database insert error: " + error.message);
         } else {
-            alert("Item added successfully!");
+            alert("Meal posted successfully to the menu!");
             document.getElementById('newItemName').value = '';
             document.getElementById('newItemPrice').value = '';
             document.getElementById('newItemStock').value = '';
+            document.getElementById('newItemImage').value = '';
             loadMenu();
         }
     }
@@ -401,7 +439,6 @@
         location.reload();
     }
 
-    // Auto-check active session on load
     _supabase.auth.getSession().then(({ data: { session } }) => {
         if (session) {
             transitionToDashboard(session.user);
