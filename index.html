@@ -1,164 +1,413 @@
+HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Big Plate</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      font-family: Arial, sans-serif;
-    }
-    .auth-container {
-      width: 100%;
-      max-width: 400px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
-      border-radius: 8px;
-      background: #fff !important;
-    }
-    .auth-box {
-      text-align: center;
-    }
-    .input-group {
-      margin-bottom: 15px;
-      text-align: left;
-    }
-    .input-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-size: 14px;
-    }
-    .input-group input, 
-    .input-group select {
-      width: 100%;
-      padding: 10px;
-      box-sizing: border-box;
-    }
-    .btn {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      background: #007bff;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-    }
-    .btn:hover {
-      background: #0056b3;
-    }
-    .toggle-links {
-      margin-top: 15px;
-      font-size: 14px;
-    }
-    .footer-credit {
-      position: absolute;
-      bottom: 20px;
-      text-align: center;
-      width: 100%;
-      font-size: 14px;
-      opacity: 0.8;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Plate | Ghana's Choice</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --primary: #e67e22; --dark: #2d3436; --glass: rgba(255, 255, 255, 0.95); }
+
+        body {
+            margin: 0; font-family: 'Segoe UI', sans-serif;
+            background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* AUTH SCREEN */
+        #auth-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        .auth-box {
+            background: var(--glass); 
+            padding: 30px; 
+            border-radius: 20px;
+            width: 100%; 
+            max-width: 400px; 
+            text-align: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .auth-box h1 { color: var(--primary); margin-bottom: 5px; font-weight: 800; }
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 14px;
+        }
+        .btn { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            width: 100%; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: 0.3s; 
+            margin-top: 5px;
+        }
+        .btn:hover { background: #d35400; }
+
+        .toggle-links {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .toggle-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .toggle-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* MAIN APP SCREEN */
+        #main-app { display: none; padding: 20px; width: 100%; max-width: 1200px; height: 100vh; box-sizing: border-box; overflow-y: auto; }
+        .header { background: var(--glass); padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        .search-bar { width: 100%; max-width: 400px; padding: 10px; border-radius: 25px; border: 1px solid #ddd; outline: none; margin: 0 10px; }
+
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .food-card { background: var(--glass); border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); padding: 15px; text-align: center; }
+        .food-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; }
+        .food-card h3 { margin: 10px 0 5px; color: var(--dark); font-size: 20px; }
+        .food-price { color: var(--primary); font-weight: bold; font-size: 18px; margin-bottom: 5px; }
+        .food-stock { color: #555; font-size: 13px; margin-bottom: 10px; }
+
+        .vendor-panel { background: #2d3436; color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; display: none; }
+        .cart-section { background: var(--glass); padding: 20px; border-radius: 15px; position: sticky; top: 20px; height: fit-content; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        
+        .footer-credit {
+            position: fixed;
+            bottom: 10px;
+            text-align: center;
+            width: 100%;
+            font-size: 13px;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Auth Section -->
-  <div id="auth-section" class="auth-container">
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
     <div class="auth-box">
-      <h1>Big Plate</h1>
-      <p>Welcome. Please log in or sign up to access your dashboard.</p>
-      
-      <!-- Login Form -->
-      <form id="login-form" onsubmit="handleLogin(event)">
-        <div class="input-group">
-          <input type="email" id="login-email" placeholder="Email Address" required>
-        </div>
-        <div class="input-group">
-          <input type="password" id="login-password" placeholder="Password" required>
-        </div>
-        <button type="submit" class="btn">Log In</button>
-      </form>
+        <h1 id="form-title">BIG PLATE</h1>
+        <p id="form-subtitle">Welcome. Please sign in to access your dashboard.</p>
+        
+        <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+            <!-- Always visible credentials -->
+            <div class="input-group">
+                <input type="email" id="email" placeholder="Email Address" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
 
-      <!-- Signup Form -->
-      <form id="signup-form" onsubmit="handleSignup(event)" style="display:none;">
-        <div class="input-group">
-          <input type="email" id="signup-email" placeholder="Email Address" required>
-        </div>
-        <div class="input-group">
-          <input type="password" id="signup-password" placeholder="Password" required>
-        </div>
-        <div class="input-group">
-          <input type="text" id="signup-username" placeholder="Username / Display Name" required>
-        </div>
-        <div class="input-group">
-          <input type="tel" id="signup-phone" placeholder="Telephone Number" required>
-        </div>
-        <div class="input-group">
-          <input type="text" id="signup-ghana-card" placeholder="Ghana Card (GHA-123456789-1)" required>
-        </div>
-        <div class="input-group">
-          <label for="signup-role">I am a:</label>
-          <select id="signup-role" required>
-            <option value="customer">Customer / Buyer</option>
-            <option value="vendor">Vendor / Seller</option>
-          </select>
-        </div>
-        <button type="submit" class="btn">Sign Up</button>
-      </form>
+            <!-- Hidden fields for Sign Up only -->
+            <div class="input-group signup-field" style="display: none;">
+                <input type="tel" id="phone" placeholder="Telephone Number">
+            </div>
+            <div class="input-group signup-field" style="display: none;">
+                <input type="text" id="display-name" placeholder="Username / Display Name">
+            </div>
+            <div class="input-group signup-field" style="display: none;">
+                <input type="text" id="ghana-card" placeholder="Ghana Card (GHA-123456789-1)">
+            </div>
+            <div class="input-group signup-field" style="display: none;">
+                <label for="user-role">I am a:</label>
+                <select id="user-role">
+                    <option value="customer">Customer / Buyer</option>
+                    <option value="vendor">Vendor / Seller</option>
+                </select>
+            </div>
 
-      <!-- Toggle Links -->
-      <div class="toggle-links">
-        <span id="to-signup-wrap"><a href="#" onclick="showSignup(); return false;">Create an account</a></span> | 
-        <span id="to-login-wrap" style="display:none;"><a href="#" onclick="showLogin(); return false;">Already have an account?</a></span>
-      </div>
+            <button type="submit" class="btn" id="login-btn">Log In</button>
+        </form>
+
+        <!-- Toggle Links -->
+        <div class="toggle-links">
+            <a href="#" id="toggle-to-signup" onclick="switchToSignup(event)">Create a new account</a>
+            <a href="#" id="toggle-to-login" style="display: none;" onclick="switchToLogin(event)">Already a user? Sign in</a>
+        </div>
     </div>
-  </div>
+</div>
 
-  <!-- Menu Section -->
-  <div id="menu-section" style="display:none;">
-    <div class="menu-container">
-      <h1>Big Plate Dashboard</h1>
-      <p>Access Granted! Your dashboard tools will load here.</p>
+<!-- MAIN APP SCREEN -->
+<div id="main-app">
+    <div class="header">
+        <h2 style="color:var(--primary); margin:0;">BIG PLATE</h2>
+        <input type="text" id="searchInput" class="search-bar" placeholder="Search menu..." onkeyup="filterMenu()">
+        <button onclick="signOut()" class="btn" style="width: auto; padding: 8px 15px; margin: 0;">Logout</button>
     </div>
-  </div>
 
-  <!-- Designer Credit -->
-  <div class="footer-credit">
+    <!-- Vendor Upload Panel (Shows only if user role is vendor) -->
+    <div id="vendor-section" class="vendor-panel">
+        <h3>Vendor: Upload New Item</h3>
+        <input type="text" id="newItemName" placeholder="Food Name">
+        <input type="number" id="newItemPrice" placeholder="Price (GHS)">
+        <input type="number" id="newItemStock" placeholder="Stock Quantity">
+        <button class="btn" style="background:#28a745; margin-top:10px;" onclick="uploadItem()">Add to Menu</button>
+    </div>
+
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <div style="flex: 3; min-width: 300px;">
+            <div class="menu-grid" id="menu-container"></div>
+        </div>
+
+        <div style="flex: 1; min-width: 300px;">
+            <div class="cart-section">
+                <h3>Your Cart</h3>
+                <div id="cart-items" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px;"></div>
+                <hr style="border:0; border-top:1px solid #ddd;">
+                <p>Total: <b>GHS <span id="cart-total">0</span></b></p>
+                <button class="btn" onclick="checkoutWhatsApp()">Checkout via WhatsApp</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Designer Credit -->
+<div class="footer-credit">
     <p>Designed & Developed by Titan</p>
-  </div>
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
-  <!-- Supabase Initialization & Toggle Functions -->
-  <script>
-    const SUPABASE_URL = 'https://iaqkorbstonyqhowhksr.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhcWtvcmJzdG9ueXFob3doa3NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2ODI3OTIsImV4cCI6MjA5MzI1ODc5Mn0.c9zj6qb11DHfj2HotbIcCfw4z5yfIdPw0UnHdWv5cyI';
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</div>
 
-    // Toggle logic functions
-    function showSignup() {
-      document.getElementById('login-form').style.display = 'none';
-      document.getElementById('signup-form').style.display = 'block';
-      document.getElementById('to-signup-wrap').style.display = 'none';
-      document.getElementById('to-login-wrap').style.display = 'inline';
+<!-- Supabase Initialization & Logic -->
+<script>
+    // Connection Keys
+    const supabaseUrl = 'https://udsp-saykab-rptwkyaxnp.supabase.co'; 
+    const supabaseKey = 'EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkc3BzYXlrYWJycHR3a3lheG5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1MjIzNTgsImV4cCI6MjA5MzA5ODM1OH0.Igrl0l9REXM3amQchm87zl7w92jATA6FYlcBNQ8XZCc';
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    let authMode = "login";
+    let currentCart = [];
+    let menuData = [];
+
+    // Toggle Form Views
+    function switchToSignup(e) {
+        e.preventDefault();
+        authMode = "signup";
+        
+        document.getElementById("form-title").innerText = "Create Account";
+        document.getElementById("form-subtitle").innerText = "Join Big Plate today.";
+        document.getElementById("login-btn").innerText = "Sign Up";
+
+        document.querySelectorAll(".signup-field").forEach(el => {
+            el.style.display = "block";
+            const input = el.querySelector("input, select");
+            if (input) input.required = true;
+        });
+
+        document.getElementById("toggle-to-signup").style.display = "none";
+        document.getElementById("toggle-to-login").style.display = "inline";
     }
 
-    function showLogin() {
-      document.getElementById('signup-form').style.display = 'none';
-      document.getElementById('login-form').style.display = 'block';
-      document.getElementById('to-login-wrap').style.display = 'none';
-      document.getElementById('to-signup-wrap').style.display = 'inline';
-    }
-  </script>
+    function switchToLogin(e) {
+        e.preventDefault();
+        authMode = "login";
 
-  <!-- Core Auth Logic -->
-  <script src="auth.js"></script>
+        document.getElementById("form-title").innerText = "BIG PLATE";
+        document.getElementById("form-subtitle").innerText = "Welcome. Please sign in to access your dashboard.";
+        document.getElementById("login-btn").innerText = "Log In";
+
+        document.querySelectorAll(".signup-field").forEach(el => {
+            el.style.display = "none";
+            const input = el.querySelector("input, select");
+            if (input) input.required = false;
+        });
+
+        document.getElementById("toggle-to-signup").style.display = "inline";
+        document.getElementById("toggle-to-login").style.display = "none";
+    }
+
+    // Auth Submission Handler (Login or Sign Up)
+    async function handleAuthSubmit(event) {
+        event.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const submitBtn = document.getElementById("login-btn");
+
+        submitBtn.disabled = true;
+
+        if (authMode === "login") {
+            const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+            submitBtn.disabled = false;
+
+            if (error) {
+                alert("Login Failed: " + error.message);
+            } else {
+                alert("Login successful!");
+                transitionToDashboard(data.user);
+            }
+        } else {
+            const phone = document.getElementById("phone").value;
+            const username = document.getElementById("display-name").value;
+            const ghanaCard = document.getElementById("ghana-card").value;
+            const role = document.getElementById("user-role").value;
+
+            const { data, error } = await _supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: { username, phone, ghanaCard, role }
+                }
+            });
+
+            submitBtn.disabled = false;
+
+            if (error) {
+                alert("Signup Failed: " + error.message);
+            } else {
+                alert("Account created successfully! Please check your email to confirm, then sign in.");
+                switchToLogin(new Event('click'));
+            }
+        }
+    }
+
+    // Switch View to Main App Dashboard
+    function transitionToDashboard(user) {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        
+        // Check user role if available from metadata to show vendor panel
+        const meta = user.user_metadata;
+        if (meta && meta.role === 'vendor') {
+            document.getElementById('vendor-section').style.display = 'block';
+        }
+        
+        loadMenu();
+    }
+
+    async function loadMenu() {
+        const { data, error } = await _supabase.from('menu').select('*');
+
+        if (error) {
+            // Fallback sample data if table isn't created yet
+            menuData = [
+                {id: 1, name: 'Assorted Jollof', price: 50, stock: 15, img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=300&q=80'},
+                {id: 2, name: 'Banku & Tilapia', price: 70, stock: 8, img: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=300&q=80'}
+            ];
+        } else {
+            menuData = data || [];
+        }
+        renderMenu(menuData);
+    }
+
+    function renderMenu(items) {
+        const container = document.getElementById('menu-container');
+        if (items.length === 0) {
+            container.innerHTML = "<p>No menu items available right now.</p>";
+            return;
+        }
+        container.innerHTML = items.map(item => `
+            <div class="food-card">
+                <img src="${item.img || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80'}" alt="${item.name}">
+                <h3>${item.name}</h3>
+                <div class="food-price">GHS ${item.price}.00</div>
+                <div class="food-stock">Stock Available: <b>${item.stock !== undefined ? item.stock : 0}</b></div>
+                <button class="btn" onclick="addToCart('${item.name}', ${item.price})" ${item.stock <= 0 ? 'disabled style="background:#ccc;cursor:not-allowed;"' : ''}>
+                    ${item.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+                </button>
+            </div>
+        `).join('');
+    }
+
+    function filterMenu() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = menuData.filter(i => i.name.toLowerCase().includes(query));
+        renderMenu(filtered);
+    }
+
+    function addToCart(name, price) {
+        currentCart.push({name, price});
+        updateCartUI();
+    }
+
+    function removeItem(index) {
+        currentCart.splice(index, 1);
+        updateCartUI();
+    }
+
+    function updateCartUI() {
+        const cartDiv = document.getElementById('cart-items');
+        let total = 0;
+        if (currentCart.length === 0) {
+            cartDiv.innerHTML = "<p style='color:#666; font-size:13px;'>Your cart is empty.</p>";
+        } else {
+            cartDiv.innerHTML = currentCart.map((item, index) => {
+                total += item.price;
+                return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:14px;">
+                    <span>${item.name} - GHS ${item.price}</span>
+                    <button onclick="removeItem(${index})" style="background:#ff4d4d; color:white; border:none; border-radius:4px; padding:2px 6px; cursor:pointer;">x</button>
+                </div>`;
+            }).join('');
+        }
+        document.getElementById('cart-total').innerText = total;
+    }
+
+    function checkoutWhatsApp() {
+        if(currentCart.length === 0) return alert("Cart is empty!");
+        let message = "Hello Big Plate, I would like to order:%0A";
+        currentCart.forEach(item => message += `- ${item.name} (GHS ${item.price})%0A`);
+        message += `%0ATotal: GHS ${document.getElementById('cart-total').innerText}`;
+        window.open(`https://wa.me/233500000000?text=${message}`);
+    }
+
+    async function uploadItem() {
+        const name = document.getElementById('newItemName').value;
+        const price = parseFloat(document.getElementById('newItemPrice').value);
+        const stock = parseInt(document.getElementById('newItemStock').value);
+        
+        if(!name || isNaN(price) || isNaN(stock)) return alert("Please fill in all item details correctly!");
+
+        const { error } = await _supabase.from('menu').insert([{ name, price, stock }]);
+        if(error) {
+            alert("Error adding item: " + error.message);
+        } else {
+            alert("Item added successfully!");
+            document.getElementById('newItemName').value = '';
+            document.getElementById('newItemPrice').value = '';
+            document.getElementById('newItemStock').value = '';
+            loadMenu();
+        }
+    }
+
+    async function signOut() {
+        await _supabase.auth.signOut();
+        location.reload();
+    }
+
+    // Auto-check active session on load
+    _supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+            transitionToDashboard(session.user);
+        }
+    });
+</script>
+
 </body>
 </html>
